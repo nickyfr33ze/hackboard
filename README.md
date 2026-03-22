@@ -5,12 +5,57 @@ A lightweight self-hosted dashboard for cybersecurity and developer news feeds, 
 ## Features
 
 - Two-column dashboard: Security feeds left, Developer feeds right
-- Auto-refreshes every 5 minutes in the browser
-- High-severity items (zero-days, KEVs, CVSS >= 8.0) highlighted in red
-- Discord webhook alerts — separate HIGH and GENERAL channels
-- Bookmark manager
-- Dynamic source management via UI (add, enable/disable, delete)
+- Auto-refreshes every 5 minutes in the browser (manual Refresh button also available)
+- Search feeds by keyword, filter by date range, sort newest/oldest
+- High-severity items (zero-days, KEVs, CVSS >= 8.0) highlighted in red with badge
+- Discord webhook alerts — separate HIGH and GENERAL channels with rate limiting
+- Manual article submission — paste a URL, title is auto-fetched from the page
+- Quick-add feed panel on the dashboard toolbar
+- Bookmark manager (add, edit, delete, tags, notes)
+- Dynamic source management UI (add, enable/disable, delete — survives restarts)
+- APScheduler background polling every 30 minutes, immediate fetch on startup
 - Systemd service for always-on operation
+
+---
+
+## Default Feed Sources
+
+### Security — General News
+| Source | Feed |
+|---|---|
+| CISA Alerts | RSS (PDF links enabled) |
+| CISA KEV | JSON (Known Exploited Vulnerabilities) |
+| The Hacker News | RSS |
+| Bleeping Computer | RSS |
+| Krebs on Security | RSS |
+
+### Security — Cyber Attacks & Incidents
+| Source | Feed |
+|---|---|
+| CyberScoop | RSS |
+| Dark Reading | RSS |
+
+### Security — Vulnerabilities
+| Source | Feed |
+|---|---|
+| Exploit-DB | RSS |
+| SANS ISC Diary | RSS |
+
+### Security — Threat Intelligence
+| Source | Feed |
+|---|---|
+| Talos Intelligence | RSS |
+| Malwarebytes Labs | RSS |
+| Securelist (Kaspersky) | RSS |
+
+### Developer
+| Source | Feed |
+|---|---|
+| Hacker News (top posts) | RSS |
+| Dev.to | RSS |
+| GitHub Blog | RSS |
+
+---
 
 ## Quick Start (Linux)
 
@@ -90,12 +135,18 @@ sudo ufw allow in on tailscale0 to any port 5000
 
 ## Development (local/macOS)
 
+> **Note:** Port 5000 is used by AirPlay Receiver on macOS. Use 5001 or disable AirPlay Receiver in System Settings.
+
 ```bash
-cp .env.example .env  # or create .env manually
-SECRET_KEY=dev .venv/bin/python3 run.py
+cp .env.example .env  # fill in SECRET_KEY at minimum
+SECRET_KEY=dev .venv/bin/python3 -c "
+from app import create_app
+app = create_app()
+app.run(host='0.0.0.0', port=5001, debug=True)
+"
 ```
 
-Feeds are fetched immediately on startup and every 30 minutes thereafter. Hit **Refresh Feeds** on the dashboard to pull manually.
+`debug=True` enables hot-reload for templates and static files without restarts.
 
 ---
 
@@ -115,20 +166,9 @@ All config is via environment variables (`.env` for dev, `/etc/hackboard/hackboa
 
 ---
 
-## Adding / Managing Sources
+## Managing Sources
 
-Go to `/sources` in the UI. Built-in defaults:
-
-| Source | Category |
-|---|---|
-| CISA Alerts | Security |
-| CISA KEV | Security |
-| The Hacker News | Security |
-| Bleeping Computer | Security |
-| Krebs on Security | Security |
-| Hacker News (HN) | Dev |
-| Dev.to | Dev |
-| GitHub Blog | Dev |
+Sources are managed at `/sources` in the UI or via the **Add Feed** button on the dashboard toolbar. Changes survive restarts — new default sources are automatically added on next startup without affecting user-added or modified sources.
 
 ---
 
@@ -136,8 +176,10 @@ Go to `/sources` in the UI. Built-in defaults:
 
 | Task | How |
 |---|---|
-| Add a feed | Sources page in the UI |
+| Add a feed | Dashboard toolbar → Add Feed, or Sources page |
+| Add a one-off article | Dashboard toolbar → Add Article |
 | Adjust CVSS threshold | Edit env file, restart service |
-| Add HIGH keywords | Edit `HIGH_KEYWORDS` in `app/feeds/classifier.py`, restart |
+| Add HIGH alert keywords | Edit `HIGH_KEYWORDS` in `app/feeds/classifier.py`, restart |
 | Purge old items | `DELETE FROM feed_items WHERE fetched_at < datetime('now', '-30 days')` |
 | View logs | `journalctl -u hackboard -f` |
+| Update after git pull | `pip install -r requirements.txt && sudo systemctl restart hackboard` |
