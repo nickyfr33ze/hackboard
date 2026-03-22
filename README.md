@@ -104,7 +104,7 @@ sudo chown $USER:$USER /var/lib/hackboard
 
 ### 4. Install and start the systemd service
 
-Edit `hackboard.service` first — update `User`, `Group`, `WorkingDirectory`, and `ExecStart` to match your username and paths if they differ from `nick`.
+Edit `hackboard.service` first — update `User`, `Group`, `WorkingDirectory`, and `ExecStart` to match your username and paths if they differ from `<USERID>`.
 
 ```bash
 sudo cp hackboard.service /etc/systemd/system/
