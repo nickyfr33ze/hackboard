@@ -1,7 +1,18 @@
 <article class="feed-card {% if item['severity'] == 'high' %}feed-card--high{% endif %}">
     <header>
         <span class="card-meta">
-            <small class="source-badge">{{ item['source'] }}</small>
+            {% set _badge = SOURCE_BADGES.get(item['source']) %}
+            {% if _badge %}
+                {% set _label = _badge[0] %}
+                {% set _color = _badge[1] %}
+            {% elif item['source'].startswith('reddit_') %}
+                {% set _label = 'r/' + item['source'][7:] %}
+                {% set _color = '#FF4500' %}
+            {% else %}
+                {% set _label = item['source'].upper() %}
+                {% set _color = '#626567' %}
+            {% endif %}
+            <small class="source-badge" style="background-color: {{ _color }};">{{ _label }}</small>
             {% if item['severity'] == 'high' %}
                 <small class="severity-badge severity--high">
                     <i data-lucide="triangle-alert" class="badge-icon"></i> HIGH
