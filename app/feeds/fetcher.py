@@ -2,6 +2,7 @@ import feedparser
 import requests
 import sqlite3
 from datetime import datetime, timezone, timedelta
+from calendar import timegm
 from flask import current_app
 import time
 
@@ -44,7 +45,8 @@ def fetch_rss(source, app):
         title = entry.get('title', '(no title)')
         link = entry.get('link', '')
         summary = entry.get('summary', '') or entry.get('description', '')
-        published = entry.get('published', '') or entry.get('updated', '')
+        parsed_time = entry.get('published_parsed') or entry.get('updated_parsed')
+        published = datetime.fromtimestamp(timegm(parsed_time), tz=timezone.utc).isoformat() if parsed_time else None
         severity = classify_severity(title, summary, name, threshold)
         _insert_item(conn, guid, name, category, title, link, summary, published, severity)
         count += 1

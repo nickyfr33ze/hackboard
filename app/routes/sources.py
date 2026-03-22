@@ -19,9 +19,10 @@ def add():
     if name and display_name and url:
         try:
             add_source(name, display_name, url, type_, category, pdf_links)
-        except Exception as e:
+        except Exception:
             pass  # Duplicate name — silently ignore
-    return redirect(url_for('sources.index'))
+    next_url = request.form.get('next') or url_for('sources.index')
+    return redirect(next_url)
 
 @bp.route('/<int:source_id>/toggle', methods=['POST'])
 def toggle(source_id):

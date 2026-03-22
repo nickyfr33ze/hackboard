@@ -1,43 +1,125 @@
 /* Hackboard custom styles */
 
+/* ── Nav ── */
+.nav-brand, .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+}
+
+.nav-icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    stroke-width: 2;
+}
+
+/* ── Section headings ── */
+.section-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.section-icon {
+    width: 1.1em;
+    height: 1.1em;
+    stroke-width: 2;
+    opacity: 0.75;
+}
+
+/* ── Feed cards ── */
 .feed-card {
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.75rem;
-    border-radius: var(--pico-border-radius);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.1rem;
+    border-radius: 0.5rem;
     border: 1px solid var(--pico-muted-border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.15s ease;
+}
+
+.feed-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 .feed-card--high {
-    border-left: 3px solid #e74c3c;
-    background-color: rgba(231, 76, 60, 0.05);
+    border-left: 4px solid #e74c3c;
+    background-color: rgba(231, 76, 60, 0.06);
 }
 
+/* ── Card header ── */
 .feed-card header {
     display: flex;
-    gap: 0.5rem;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.6rem;
     padding: 0;
     background: none;
     border: none;
 }
 
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.card-date {
+    color: var(--pico-muted-color);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+/* ── Card body ── */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.3rem;
+}
+
+.inline-icon {
+    width: 0.9em;
+    height: 0.9em;
+    flex-shrink: 0;
+    margin-top: 0.15em;
+    stroke-width: 2;
+}
+
+/* ── Badges ── */
 .source-badge {
     background-color: var(--pico-muted-color);
     color: var(--pico-background-color);
-    padding: 0.1rem 0.4rem;
+    padding: 0.15rem 0.45rem;
     border-radius: 0.25rem;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
+    font-weight: 600;
 }
 
 .severity-badge {
-    padding: 0.1rem 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.15rem 0.45rem;
     border-radius: 0.25rem;
-    font-size: 0.7rem;
-    font-weight: bold;
+    font-size: 0.68rem;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 .severity--high {
@@ -45,20 +127,94 @@
     color: white;
 }
 
-.feed-summary {
-    font-size: 0.85rem;
-    color: var(--pico-muted-color);
-    margin: 0.25rem 0 0 0;
-    line-height: 1.4;
+.badge-icon {
+    width: 0.75em;
+    height: 0.75em;
+    stroke-width: 2.5;
 }
 
-.feed-card footer {
-    padding: 0;
+/* ── Summary text ── */
+.feed-summary {
+    font-size: 0.83rem;
+    color: var(--pico-muted-color);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ── Filter bar ── */
+.filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+.filter-bar input[type="search"] {
+    flex: 1;
+    min-width: 200px;
+    margin: 0;
+}
+
+.filter-bar input[type="date"] {
+    width: auto;
+    margin: 0;
+}
+
+/* ── Dashboard toolbar ── */
+.dash-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toolbar-btn {
+    margin: 0;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* ── Quick-add panels ── */
+.quick-panel {
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.quick-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ── Card delete button (manual items only) ── */
+.card-delete-btn {
     background: none;
     border: none;
-    margin-top: 0.25rem;
+    padding: 0.1rem 0.25rem;
+    cursor: pointer;
+    color: var(--pico-muted-color);
+    line-height: 1;
+    margin: 0;
 }
 
+.card-delete-btn:hover {
+    color: #e74c3c;
+}
+
+/* ── Sources page ── */
 .badge-enabled {
     color: #2ecc71;
     font-size: 0.85rem;
@@ -70,9 +226,5 @@
 }
 
 .source-disabled td {
-    opacity: 0.5;
-}
-
-nav a {
-    text-decoration: none;
+    opacity: 0.45;
 }

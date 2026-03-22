@@ -1,19 +1,36 @@
 <article class="feed-card {% if item['severity'] == 'high' %}feed-card--high{% endif %}">
     <header>
-        <small class="source-badge">{{ item['source'] }}</small>
-        {% if item['severity'] == 'high' %}
-            <small class="severity-badge severity--high">HIGH</small>
-        {% endif %}
+        <span class="card-meta">
+            <small class="source-badge">{{ item['source'] }}</small>
+            {% if item['severity'] == 'high' %}
+                <small class="severity-badge severity--high">
+                    <i data-lucide="triangle-alert" class="badge-icon"></i> HIGH
+                </small>
+            {% endif %}
+        </span>
+        <span class="card-meta">
+            {% if item['published_at'] %}
+                <small class="card-date">{{ item['published_at'][:10] }}</small>
+            {% endif %}
+            {% if item['guid'].startswith('manual:') %}
+                <form action="/blog/{{ item['id'] }}/delete" method="post" style="margin:0;">
+                    <button type="submit" class="card-delete-btn" title="Remove article">
+                        <i data-lucide="x" class="badge-icon"></i>
+                    </button>
+                </form>
+            {% endif %}
+        </span>
     </header>
-    {% if item['url'].endswith('.pdf') %}
-        <a href="{{ item['url'] }}" target="_blank" rel="noopener">{{ item['title'] }} [PDF]</a>
-    {% else %}
-        <a href="{{ item['url'] }}" target="_blank" rel="noopener">{{ item['title'] }}</a>
-    {% endif %}
-    {% if item['summary'] %}
-        <p class="feed-summary">{{ item['summary'] | striptags | truncate(200) }}</p>
-    {% endif %}
-    {% if item['published_at'] %}
-        <footer><small>{{ item['published_at'] }}</small></footer>
-    {% endif %}
+    <div class="card-body">
+        {% if item['url'].endswith('.pdf') %}
+            <a href="{{ item['url'] }}" target="_blank" rel="noopener" class="card-title">
+                <i data-lucide="file-text" class="inline-icon"></i> {{ item['title'] }}
+            </a>
+        {% else %}
+            <a href="{{ item['url'] }}" target="_blank" rel="noopener" class="card-title">{{ item['title'] }}</a>
+        {% endif %}
+        {% if item['summary'] %}
+            <p class="feed-summary">{{ item['summary'] | striptags | truncate(180) }}</p>
+        {% endif %}
+    </div>
 </article>

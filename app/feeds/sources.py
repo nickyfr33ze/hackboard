@@ -2,6 +2,7 @@ import sqlite3
 from flask import current_app
 
 DEFAULT_SOURCES = [
+    # ── General Security News ──────────────────────────────────────────────
     {
         "name": "cisa_alerts",
         "display_name": "CISA Alerts",
@@ -42,6 +43,70 @@ DEFAULT_SOURCES = [
         "category": "security",
         "pdf_links": False,
     },
+
+    # ── Cyber Attacks / Incidents ──────────────────────────────────────────
+    {
+        "name": "cyberscoop",
+        "display_name": "CyberScoop",
+        "url": "https://cyberscoop.com/feed/",
+        "type": "rss",
+        "category": "security",
+        "pdf_links": False,
+    },
+    {
+        "name": "darkreading",
+        "display_name": "Dark Reading",
+        "url": "https://www.darkreading.com/rss/all",
+        "type": "rss",
+        "category": "security",
+        "pdf_links": False,
+    },
+
+    # ── Vulnerabilities ────────────────────────────────────────────────────
+    {
+        "name": "exploitdb",
+        "display_name": "Exploit-DB",
+        "url": "https://www.exploit-db.com/rss.xml",
+        "type": "rss",
+        "category": "security",
+        "pdf_links": False,
+    },
+    {
+        "name": "sans_isc",
+        "display_name": "SANS ISC Diary",
+        "url": "https://isc.sans.edu/rssfeed.xml",
+        "type": "rss",
+        "category": "security",
+        "pdf_links": False,
+    },
+
+    # ── Threat Intelligence ────────────────────────────────────────────────
+    {
+        "name": "talos",
+        "display_name": "Talos Intelligence",
+        "url": "https://blog.talosintelligence.com/feeds/posts/default",
+        "type": "rss",
+        "category": "security",
+        "pdf_links": False,
+    },
+    {
+        "name": "malwarebytes",
+        "display_name": "Malwarebytes Labs",
+        "url": "https://www.malwarebytes.com/blog/feed/index.xml",
+        "type": "rss",
+        "category": "security",
+        "pdf_links": False,
+    },
+    {
+        "name": "securelist",
+        "display_name": "Securelist (Kaspersky)",
+        "url": "https://securelist.com/feed/",
+        "type": "rss",
+        "category": "security",
+        "pdf_links": False,
+    },
+
+    # ── Developer ──────────────────────────────────────────────────────────
     {
         "name": "hackernews",
         "display_name": "Hacker News",
@@ -69,18 +134,22 @@ DEFAULT_SOURCES = [
 ]
 
 def seed_sources(app):
-    """Insert DEFAULT_SOURCES if the sources table is empty."""
+    """Insert any DEFAULT_SOURCES entries not already present in the DB."""
     with app.app_context():
         conn = sqlite3.connect(app.config['DATABASE_PATH'])
         conn.row_factory = sqlite3.Row
-        count = conn.execute("SELECT COUNT(*) FROM sources").fetchone()[0]
-        if count == 0:
-            for s in DEFAULT_SOURCES:
+        existing = {r['name'] for r in conn.execute("SELECT name FROM sources").fetchall()}
+        added = 0
+        for s in DEFAULT_SOURCES:
+            if s['name'] not in existing:
                 conn.execute(
                     "INSERT OR IGNORE INTO sources (name, display_name, url, type, category, pdf_links) VALUES (?, ?, ?, ?, ?, ?)",
                     (s['name'], s['display_name'], s['url'], s['type'], s['category'], 1 if s['pdf_links'] else 0)
                 )
+                added += 1
+        if added:
             conn.commit()
+            print(f"[sources] Seeded {added} new default source(s)")
         conn.close()
 
 def get_enabled_sources(app):

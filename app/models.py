@@ -1,5 +1,6 @@
 import sqlite3
 from contextlib import contextmanager
+from email.utils import parsedate_to_datetime
 from flask import current_app, g
 
 SCHEMA = """
@@ -65,8 +66,24 @@ def init_db(app):
         conn = sqlite3.connect(db_path)
         conn.executescript(SCHEMA)
         conn.commit()
+        _migrate_published_at(conn)
         conn.close()
     app.teardown_appcontext(close_db)
+
+def _migrate_published_at(conn):
+    """Normalize any existing published_at values that aren't ISO format."""
+    rows = conn.execute(
+        "SELECT id, published_at FROM feed_items WHERE published_at IS NOT NULL AND published_at NOT LIKE '____-__-__%'"
+    ).fetchall()
+    for row in rows:
+        try:
+            iso = parsedate_to_datetime(row[1]).isoformat()
+            conn.execute("UPDATE feed_items SET published_at = ? WHERE id = ?", (iso, row[0]))
+        except Exception:
+            conn.execute("UPDATE feed_items SET published_at = NULL WHERE id = ?", (row[0],))
+    if rows:
+        conn.commit()
+        print(f"[models] Migrated {len(rows)} published_at values to ISO format")
 
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
@@ -79,15 +96,31 @@ def execute_db(query, args=()):
     db.commit()
     return cur
 
-def get_feed_items(category=None, limit=100, offset=0):
+def get_feed_items(category=None, limit=100, offset=0, search=None, date_from=None, date_to=None, sort='newest'):
+    conditions = []
+    args = []
+
     if category:
-        return query_db(
-            "SELECT * FROM feed_items WHERE category = ? ORDER BY fetched_at DESC LIMIT ? OFFSET ?",
-            (category, limit, offset)
-        )
+        conditions.append("category = ?")
+        args.append(category)
+    if search:
+        conditions.append("(title LIKE ? OR summary LIKE ?)")
+        args.extend([f"%{search}%", f"%{search}%"])
+    if date_from:
+        conditions.append("DATE(COALESCE(NULLIF(published_at,''), fetched_at)) >= ?")
+        args.append(date_from)
+    if date_to:
+        conditions.append("DATE(COALESCE(NULLIF(published_at,''), fetched_at)) <= ?")
+        args.append(date_to)
+
+    direction = "ASC" if sort == 'oldest' else "DESC"
+    order = f"COALESCE(NULLIF(published_at,''), fetched_at) {direction}"
+
+    where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+    args.extend([limit, offset])
     return query_db(
-        "SELECT * FROM feed_items ORDER BY fetched_at DESC LIMIT ? OFFSET ?",
-        (limit, offset)
+        f"SELECT * FROM feed_items {where} ORDER BY {order} LIMIT ? OFFSET ?",
+        args
     )
 
 def get_pending_discord_items():

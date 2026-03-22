@@ -1,15 +1,124 @@
 {% extends "base.html" %}
 {% block title %}Dashboard — Hackboard{% endblock %}
 {% block content %}
-<div style="display:flex; gap:1rem; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-    <h2>Dashboard</h2>
-    <form action="/api/feeds/refresh" method="get" style="margin:0;">
-        <button type="submit" class="outline secondary" style="margin:0; padding:0.4rem 1rem;">Refresh Feeds</button>
+<div class="dash-toolbar">
+    <h2 style="margin:0;">Dashboard</h2>
+    <div class="toolbar-actions">
+        <small id="refresh-status" style="color:var(--pico-muted-color);"></small>
+        <button class="outline secondary toolbar-btn" onclick="togglePanel('panel-feed')">
+            <i data-lucide="rss" class="nav-icon"></i> Add Feed
+        </button>
+        <button class="outline secondary toolbar-btn" onclick="togglePanel('panel-article')">
+            <i data-lucide="file-plus" class="nav-icon"></i> Add Article
+        </button>
+        <form action="/api/feeds/refresh" method="get" style="margin:0;">
+            <button type="submit" class="outline secondary toolbar-btn">
+                <i data-lucide="refresh-cw" class="nav-icon"></i> Refresh
+            </button>
+        </form>
+    </div>
+</div>
+
+<div id="panel-feed" class="quick-panel" hidden>
+    <form action="/sources/add" method="post" class="quick-form">
+        <input type="hidden" name="next" value="/">
+        <div class="grid">
+            <input type="url" name="url" placeholder="Feed URL" required style="margin:0;">
+            <input type="text" name="display_name" placeholder="Display name" required style="margin:0;">
+            <input type="text" name="name" placeholder='Short ID (e.g. "sans_isc")' required style="margin:0;">
+        </div>
+        <div class="grid" style="grid-template-columns: auto auto 1fr;">
+            <select name="type" style="margin:0; width:auto;">
+                <option value="rss">RSS / Atom</option>
+                <option value="kev_json">KEV JSON</option>
+            </select>
+            <select name="category" style="margin:0; width:auto;">
+                <option value="security">Security</option>
+                <option value="dev">Developer</option>
+            </select>
+            <div style="display:flex; gap:0.5rem; align-items:center; justify-content:flex-end;">
+                <button type="submit" style="margin:0;">Add Feed</button>
+                <button type="button" class="outline secondary" style="margin:0;" onclick="togglePanel('panel-feed')">Cancel</button>
+            </div>
+        </div>
     </form>
 </div>
+
+<div id="panel-article" class="quick-panel" hidden>
+    <form action="/blog/add" method="post" class="quick-form">
+        <div class="grid">
+            <input type="url" name="url" placeholder="Article URL" required style="margin:0;">
+            <input type="text" name="title" placeholder="Title (auto-fetched if blank)" style="margin:0;">
+        </div>
+        <div class="grid" style="grid-template-columns: 1fr auto 1fr;">
+            <input type="text" name="source_name" placeholder='Source label (e.g. "Troy Hunt")' style="margin:0;">
+            <select name="category" style="margin:0; width:auto;">
+                <option value="security">Security</option>
+                <option value="dev">Developer</option>
+            </select>
+            <textarea name="summary" placeholder="Summary (optional)" rows="1" style="margin:0;"></textarea>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+            <button type="submit" style="margin:0;">Add Article</button>
+            <button type="button" class="outline secondary" style="margin:0;" onclick="togglePanel('panel-article')">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<form method="get" action="/" class="filter-bar">
+    <input type="search" name="search" placeholder="Search titles and summaries…" value="{{ search }}" style="margin:0;">
+    <input type="date" name="date_from" value="{{ date_from }}" title="From date" style="margin:0;">
+    <input type="date" name="date_to" value="{{ date_to }}" title="To date" style="margin:0;">
+    <select name="sort" style="margin:0; width:auto;">
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest first</option>
+        <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Oldest first</option>
+    </select>
+    <button type="submit" style="margin:0; padding:0.4rem 1rem;">Apply</button>
+    {% if search or date_from or date_to or sort != 'newest' %}
+    <a href="/" role="button" class="outline secondary" style="margin:0; padding:0.4rem 1rem;">Clear</a>
+    {% endif %}
+</form>
+{% if search or date_from or date_to %}
+<p><small>Filtered results{% if search %} — keyword: <strong>{{ search }}</strong>{% endif %}{% if date_from %}, from <strong>{{ date_from }}</strong>{% endif %}{% if date_to %} to <strong>{{ date_to }}</strong>{% endif %}</small></p>
+{% endif %}
+
+<script>
+function togglePanel(id) {
+    const panel = document.getElementById(id);
+    const other = id === 'panel-feed' ? 'panel-article' : 'panel-feed';
+    document.getElementById(other).hidden = true;
+    panel.hidden = !panel.hidden;
+    if (!panel.hidden) panel.querySelector('input,select,textarea').focus();
+}
+
+(function () {
+    const INTERVAL_MS = 5 * 60 * 1000;
+    const status = document.getElementById('refresh-status');
+    let countdown = INTERVAL_MS / 1000;
+
+    function tick() {
+        const m = Math.floor(countdown / 60);
+        const s = String(countdown % 60).padStart(2, '0');
+        status.textContent = `Auto-refresh in ${m}:${s}`;
+        countdown--;
+        if (countdown < 0) {
+            status.textContent = 'Refreshing…';
+            fetch('/api/feeds/refresh')
+                .then(() => location.reload())
+                .catch(() => location.reload());
+        }
+    }
+
+    tick();
+    setInterval(tick, 1000);
+})();
+</script>
+
 <div class="grid">
     <section>
-        <h3>Security</h3>
+        <h3 class="section-heading">
+            <i data-lucide="shield-alert" class="section-icon"></i> Security
+        </h3>
         {% for item in security_items %}
             {% include "partials/feed_card.html" %}
         {% else %}
@@ -17,7 +126,9 @@
         {% endfor %}
     </section>
     <section>
-        <h3>Developer</h3>
+        <h3 class="section-heading">
+            <i data-lucide="code-2" class="section-icon"></i> Developer
+        </h3>
         {% for item in dev_items %}
             {% include "partials/feed_card.html" %}
         {% else %}

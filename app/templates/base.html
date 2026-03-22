@@ -6,17 +6,26 @@
     <title>{% block title %}Hackboard{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
     <header class="container">
         <nav>
             <ul>
-                <li><strong><a href="/" class="contrast">Hackboard</a></strong></li>
+                <li><strong><a href="/" class="contrast nav-brand">
+                    <i data-lucide="radio" class="nav-icon"></i> Hackboard
+                </a></strong></li>
             </ul>
             <ul>
-                <li><a href="/">Dashboard</a></li>
-                <li><a href="/bookmarks">Bookmarks</a></li>
-                <li><a href="/sources">Sources</a></li>
+                <li><a href="/" class="nav-link">
+                    <i data-lucide="layout-dashboard" class="nav-icon"></i> Dashboard
+                </a></li>
+                <li><a href="/bookmarks" class="nav-link">
+                    <i data-lucide="bookmark" class="nav-icon"></i> Bookmarks
+                </a></li>
+                <li><a href="/sources" class="nav-link">
+                    <i data-lucide="rss" class="nav-icon"></i> Sources
+                </a></li>
             </ul>
         </nav>
     </header>
@@ -26,5 +35,6 @@
     <footer class="container">
         <small>Hackboard — OmniTrail Technologies</small>
     </footer>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
