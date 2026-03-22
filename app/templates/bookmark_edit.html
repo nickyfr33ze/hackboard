@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Edit Bookmark — Hackboard{% endblock %}
+{% block content %}
+<h2>Edit Bookmark</h2>
+<form action="/bookmarks/{{ bookmark['id'] }}/edit" method="post">
+    <input type="text" name="title" value="{{ bookmark['title'] }}" placeholder="Title" required>
+    <input type="url" name="url" value="{{ bookmark['url'] }}" placeholder="URL" required>
+    <input type="text" name="tags" value="{{ bookmark['tags'] or '' }}" placeholder="Tags (comma-separated)">
+    <textarea name="notes" placeholder="Notes" rows="3">{{ bookmark['notes'] or '' }}</textarea>
+    <div style="display:flex; gap:0.5rem;">
+        <button type="submit">Save</button>
+        <a href="/bookmarks" role="button" class="outline secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

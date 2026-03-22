@@ -1,0 +1,78 @@
+/* Hackboard custom styles */
+
+.feed-card {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: var(--pico-border-radius);
+    border: 1px solid var(--pico-muted-border-color);
+}
+
+.feed-card--high {
+    border-left: 3px solid #e74c3c;
+    background-color: rgba(231, 76, 60, 0.05);
+}
+
+.feed-card header {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.25rem;
+    padding: 0;
+    background: none;
+    border: none;
+}
+
+.source-badge {
+    background-color: var(--pico-muted-color);
+    color: var(--pico-background-color);
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.severity-badge {
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.severity--high {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.feed-summary {
+    font-size: 0.85rem;
+    color: var(--pico-muted-color);
+    margin: 0.25rem 0 0 0;
+    line-height: 1.4;
+}
+
+.feed-card footer {
+    padding: 0;
+    background: none;
+    border: none;
+    margin-top: 0.25rem;
+}
+
+.badge-enabled {
+    color: #2ecc71;
+    font-size: 0.85rem;
+}
+
+.badge-disabled {
+    color: var(--pico-muted-color);
+    font-size: 0.85rem;
+}
+
+.source-disabled td {
+    opacity: 0.5;
+}
+
+nav a {
+    text-decoration: none;
+}

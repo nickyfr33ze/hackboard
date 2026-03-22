@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Sources — Hackboard{% endblock %}
+{% block content %}
+<h2>Feed Sources</h2>
+
+<details>
+    <summary>Add Source</summary>
+    <form action="/sources/add" method="post">
+        <div class="grid">
+            <input type="text" name="name" placeholder="Short name (e.g. my_feed)" required>
+            <input type="text" name="display_name" placeholder="Display name" required>
+        </div>
+        <input type="url" name="url" placeholder="Feed URL" required>
+        <div class="grid">
+            <select name="type">
+                <option value="rss">RSS / Atom</option>
+                <option value="kev_json">KEV JSON</option>
+            </select>
+            <select name="category">
+                <option value="security">Security</option>
+                <option value="dev">Developer</option>
+            </select>
+        </div>
+        <label>
+            <input type="checkbox" name="pdf_links">
+            Enable PDF link detection
+        </label>
+        <button type="submit">Add Source</button>
+    </form>
+</details>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for src in sources %}
+        <tr class="{% if not src['enabled'] %}source-disabled{% endif %}">
+            <td>
+                <strong>{{ src['display_name'] }}</strong><br>
+                <small><a href="{{ src['url'] }}" target="_blank" rel="noopener">{{ src['url'] | truncate(60) }}</a></small>
+            </td>
+            <td>{{ src['category'] }}</td>
+            <td>{{ src['type'] }}</td>
+            <td>
+                {% if src['enabled'] %}
+                    <span class="badge-enabled">Enabled</span>
+                {% else %}
+                    <span class="badge-disabled">Disabled</span>
+                {% endif %}
+            </td>
+            <td>
+                <form action="/sources/{{ src['id'] }}/toggle" method="post" style="display:inline;">
+                    <button type="submit" class="outline" style="padding:0.2rem 0.5rem; font-size:0.8rem;">
+                        {% if src['enabled'] %}Disable{% else %}Enable{% endif %}
+                    </button>
+                </form>
+                <form action="/sources/{{ src['id'] }}/delete" method="post" style="display:inline;" onsubmit="return confirm('Delete source and all its items?')">
+                    <button type="submit" class="outline secondary" style="padding:0.2rem 0.5rem; font-size:0.8rem;">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

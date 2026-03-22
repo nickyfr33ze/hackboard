@@ -1,0 +1,19 @@
+<article class="feed-card {% if item['severity'] == 'high' %}feed-card--high{% endif %}">
+    <header>
+        <small class="source-badge">{{ item['source'] }}</small>
+        {% if item['severity'] == 'high' %}
+            <small class="severity-badge severity--high">HIGH</small>
+        {% endif %}
+    </header>
+    {% if item['url'].endswith('.pdf') %}
+        <a href="{{ item['url'] }}" target="_blank" rel="noopener">{{ item['title'] }} [PDF]</a>
+    {% else %}
+        <a href="{{ item['url'] }}" target="_blank" rel="noopener">{{ item['title'] }}</a>
+    {% endif %}
+    {% if item['summary'] %}
+        <p class="feed-summary">{{ item['summary'] | striptags | truncate(200) }}</p>
+    {% endif %}
+    {% if item['published_at'] %}
+        <footer><small>{{ item['published_at'] }}</small></footer>
+    {% endif %}
+</article>

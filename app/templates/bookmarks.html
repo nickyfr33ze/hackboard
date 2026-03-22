@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Bookmarks — Hackboard{% endblock %}
+{% block content %}
+<h2>Bookmarks</h2>
+
+<details>
+    <summary>Add Bookmark</summary>
+    <form action="/bookmarks/add" method="post">
+        <div class="grid">
+            <input type="text" name="title" placeholder="Title" required>
+            <input type="url" name="url" placeholder="URL" required>
+        </div>
+        <input type="text" name="tags" placeholder="Tags (comma-separated)">
+        <textarea name="notes" placeholder="Notes" rows="2"></textarea>
+        <button type="submit">Save Bookmark</button>
+    </form>
+</details>
+
+{% if bookmarks %}
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Tags</th>
+            <th>Notes</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bm in bookmarks %}
+        <tr>
+            <td><a href="{{ bm['url'] }}" target="_blank" rel="noopener">{{ bm['title'] }}</a></td>
+            <td>{% if bm['tags'] %}<small>{{ bm['tags'] }}</small>{% endif %}</td>
+            <td>{% if bm['notes'] %}<small>{{ bm['notes'] }}</small>{% endif %}</td>
+            <td>
+                <form action="/bookmarks/{{ bm['id'] }}/delete" method="post" style="display:inline;">
+                    <button type="submit" class="outline secondary" style="padding:0.2rem 0.5rem; font-size:0.8rem;">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p><em>No bookmarks yet.</em></p>
+{% endif %}
+{% endblock %}

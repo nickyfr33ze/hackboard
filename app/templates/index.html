@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Hackboard{% endblock %}
+{% block content %}
+<div style="display:flex; gap:1rem; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+    <h2>Dashboard</h2>
+    <form action="/api/feeds/refresh" method="get" style="margin:0;">
+        <button type="submit" class="outline secondary" style="margin:0; padding:0.4rem 1rem;">Refresh Feeds</button>
+    </form>
+</div>
+<div class="grid">
+    <section>
+        <h3>Security</h3>
+        {% for item in security_items %}
+            {% include "partials/feed_card.html" %}
+        {% else %}
+            <p><em>No security items yet. Click Refresh Feeds.</em></p>
+        {% endfor %}
+    </section>
+    <section>
+        <h3>Developer</h3>
+        {% for item in dev_items %}
+            {% include "partials/feed_card.html" %}
+        {% else %}
+            <p><em>No dev items yet. Click Refresh Feeds.</em></p>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}

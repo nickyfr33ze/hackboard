@@ -1,0 +1,18 @@
+[Unit]
+Description=Hackboard Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=nick
+Group=nick
+WorkingDirectory=/home/nick/dev/git/hackboard
+EnvironmentFile=/etc/hackboard/hackboard.env
+ExecStart=/home/nick/.venv/hackboard/bin/python run.py
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
