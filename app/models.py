@@ -96,9 +96,23 @@ def execute_db(query, args=()):
     db.commit()
     return cur
 
+def toggle_reddit_sources():
+    result = query_db("SELECT COUNT(*) FROM sources WHERE name LIKE 'reddit_%' AND enabled = 1", one=True)
+    enabled_count = result[0]
+    if enabled_count > 0:
+        execute_db("UPDATE sources SET enabled = 0 WHERE name LIKE 'reddit_%'")
+    else:
+        execute_db("UPDATE sources SET enabled = 1 WHERE name LIKE 'reddit_%'")
+
 def get_feed_items(category=None, limit=100, offset=0, search=None, date_from=None, date_to=None, sort='newest'):
     conditions = []
     args = []
+
+    # Only show items from enabled sources (manual items have no sources row — always show those)
+    conditions.append(
+        "(source IN (SELECT name FROM sources WHERE enabled = 1)"
+        " OR source NOT IN (SELECT name FROM sources))"
+    )
 
     if category:
         conditions.append("category = ?")

@@ -1,12 +1,14 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from ..models import get_sources, toggle_source, delete_source, add_source
+from ..models import get_sources, toggle_source, delete_source, add_source, toggle_reddit_sources, query_db
 
 bp = Blueprint('sources', __name__)
 
 @bp.route('/')
 def index():
     sources = get_sources()
-    return render_template('sources.html', sources=sources)
+    result = query_db("SELECT COUNT(*) FROM sources WHERE name LIKE 'reddit_%' AND enabled = 1", one=True)
+    reddit_any_enabled = result[0] > 0
+    return render_template('sources.html', sources=sources, reddit_any_enabled=reddit_any_enabled)
 
 @bp.route('/add', methods=['POST'])
 def add():
@@ -23,6 +25,11 @@ def add():
             pass  # Duplicate name — silently ignore
     next_url = request.form.get('next') or url_for('sources.index')
     return redirect(next_url)
+
+@bp.route('/toggle-reddit', methods=['POST'])
+def toggle_reddit():
+    toggle_reddit_sources()
+    return redirect(url_for('sources.index'))
 
 @bp.route('/<int:source_id>/toggle', methods=['POST'])
 def toggle(source_id):

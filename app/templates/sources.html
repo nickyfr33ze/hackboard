@@ -29,6 +29,18 @@
     </form>
 </details>
 
+<div style="margin-bottom: 1rem;">
+    <form action="/sources/toggle-reddit" method="post" style="display:inline;">
+        <button type="submit" class="outline" style="font-size:0.85rem; padding:0.3rem 0.75rem;">
+            {% if reddit_any_enabled %}
+                Disable All Reddit
+            {% else %}
+                Enable All Reddit
+            {% endif %}
+        </button>
+    </form>
+</div>
+
 <table>
     <thead>
         <tr>

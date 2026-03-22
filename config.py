@@ -8,6 +8,7 @@ class Config:
     DATABASE_PATH = os.environ.get("DATABASE_PATH", "hackboard.db")
     DISCORD_HIGH_WEBHOOK = os.environ.get("DISCORD_HIGH_WEBHOOK", "")
     DISCORD_GENERAL_WEBHOOK = os.environ.get("DISCORD_GENERAL_WEBHOOK", "")
+    DISCORD_REDDIT_WEBHOOK = os.environ.get("DISCORD_REDDIT_WEBHOOK", "")
     FEED_POLL_INTERVAL_MINUTES = int(os.environ.get("FEED_POLL_INTERVAL_MINUTES", 30))
     CVSS_HIGH_THRESHOLD = float(os.environ.get("CVSS_HIGH_THRESHOLD", 8.0))
     MAX_ITEMS_PER_SOURCE = int(os.environ.get("MAX_ITEMS_PER_SOURCE", 50))

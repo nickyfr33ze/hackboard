@@ -20,8 +20,9 @@ def send_pending_alerts(app):
     """Send unsent security feed items to Discord. Skips items older than 24h on first run."""
     high_webhook = app.config.get('DISCORD_HIGH_WEBHOOK', '')
     general_webhook = app.config.get('DISCORD_GENERAL_WEBHOOK', '')
+    reddit_webhook = app.config.get('DISCORD_REDDIT_WEBHOOK', '')
 
-    if not high_webhook and not general_webhook:
+    if not high_webhook and not general_webhook and not reddit_webhook:
         return
 
     conn = sqlite3.connect(app.config['DATABASE_PATH'])
@@ -53,7 +54,9 @@ def send_pending_alerts(app):
 
         content = f"**[{source.upper()}]** {title}\n{url}"
 
-        if severity == 'high':
+        if source.startswith('reddit_'):
+            webhook_url = reddit_webhook
+        elif severity == 'high':
             webhook_url = high_webhook
         else:
             webhook_url = general_webhook
