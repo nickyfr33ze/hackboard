@@ -62,8 +62,8 @@ A lightweight self-hosted dashboard for cybersecurity and developer news feeds, 
 ### 1. Clone and set up the venv
 
 ```bash
-git clone <repo-url> ~/dev/git/hackboard
-cd ~/dev/git/hackboard
+git clone <repo-url> 
+cd hackboard/
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
