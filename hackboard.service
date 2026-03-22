@@ -4,11 +4,11 @@ After=network.target
 
 [Service]
 Type=simple
-User=nick
-Group=nick
-WorkingDirectory=/home/nick/dev/git/hackboard
+User=<USERID>
+Group=<USERID>
+WorkingDirectory=/PATH-TO-REPO-ROOT-DIR
 EnvironmentFile=/etc/hackboard/hackboard.env
-ExecStart=/home/nick/.venv/hackboard/bin/python run.py
+ExecStart=/PATH-TO-REPO-ROOT-DIR/.venv/hackboard/bin/python run.py
 Restart=on-failure
 RestartSec=5s
 NoNewPrivileges=true
