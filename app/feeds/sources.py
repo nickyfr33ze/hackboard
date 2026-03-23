@@ -56,7 +56,7 @@ DEFAULT_SOURCES = [
     {
         "name": "darkreading",
         "display_name": "Dark Reading",
-        "url": "https://www.darkreading.com/rss/all",
+        "url": "https://www.darkreading.com/rss.xml",
         "type": "rss",
         "category": "security",
         "pdf_links": False,
@@ -84,7 +84,7 @@ DEFAULT_SOURCES = [
     {
         "name": "talos",
         "display_name": "Talos Intelligence",
-        "url": "https://blog.talosintelligence.com/feeds/posts/default",
+        "url": "https://blog.talosintelligence.com/rss/",
         "type": "rss",
         "category": "security",
         "pdf_links": False,
